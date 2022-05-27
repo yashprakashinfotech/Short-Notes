@@ -8,26 +8,73 @@
     tools:context=".activity.AddEditActivity">
 
     <EditText
+        android:id="@+id/etNoteTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/etNoteTitle"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:hint="@string/enter_note_title"
         android:textColor="@color/white"
+        android:textColorHint="@color/white" />
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchAlarm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:layout_marginHorizontal="10dp"
+        android:layout_below="@id/etNoteTitle"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:paddingStart="5dp"
+        android:text="@string/alert"
+        tools:ignore="RtlSymmetry" />
+
+    <EditText
+        android:id="@+id/etDate"
+        style="@style/common_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:hint="@string/dd_MM_yyyy"
+        android:textColor="@color/white"
         android:textColorHint="@color/white"
-        android:layout_margin="10dp"
-        />
+        android:layout_below="@id/switchAlarm"
+        android:visibility="gone"
+        tools:ignore="Autofill,LabelFor,MissingConstraints,RtlSymmetry,TextFields" />
+
+    <EditText
+        android:id="@+id/etTime"
+        style="@style/common_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:hint="@string/dd_MM_yyyy"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:layout_below="@id/etDate"
+        android:visibility="gone"
+        tools:ignore="Autofill,LabelFor,MissingConstraints,RtlSymmetry,TextFields" />
 
     <EditText
         android:id="@+id/etNoteDescription"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/etNoteTitle"
+        android:layout_above="@id/btnAddUpdate"
+        android:layout_below="@id/etTime"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:gravity="start|top"
-        android:layout_above="@id/btnAddUpdate"
         android:hint="@string/enter_note_description"
         android:inputType="textMultiLine"
         android:singleLine="false"

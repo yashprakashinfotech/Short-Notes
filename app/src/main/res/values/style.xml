@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="common_edit_text">
+
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:ems">10</item>
+        <item name="android:enabled">false</item>
+        <item name="android:padding">10dp</item>
+        <item name="paddingStart">25dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:focusable">true</item>
+        <item name="android:drawablePadding">12dp</item>
+
+    </style>
+
+</resources>
