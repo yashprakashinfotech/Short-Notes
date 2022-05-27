@@ -52,7 +52,7 @@ class AddEditActivity : AppCompatActivity() {
             val noteTitle = etNoteTitle.text.toString()
             val noteDescription = etNoteDescription.text.toString()
 
-            if (noteType == "Edit"){
+            if (noteType == "Edit"){ // Update the Note
 
                 if (noteTitle.isNotEmpty() && noteDescription.isNotEmpty()){
                     val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
@@ -63,17 +63,22 @@ class AddEditActivity : AppCompatActivity() {
                     Toast.makeText(this,"Note Update", Toast.LENGTH_SHORT).show()
                 }
 
-            }else{
+            }else{ // Add the New Note
                 if (noteTitle.isNotEmpty() && noteDescription.isNotEmpty()){
                     val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                     val currentDate: String = sdf.format(Date())
                     noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate))
                     Toast.makeText(this,"Note Added", Toast.LENGTH_SHORT).show()
+
+                    startActivity(Intent(applicationContext, MainActivity::class.java))
+                    this.finish()
+                }else{
+                    Toast.makeText(this,"Please Write Note!", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            startActivity(Intent(applicationContext, MainActivity::class.java))
-            this.finish()
+//            startActivity(Intent(applicationContext, MainActivity::class.java))
+//            this.finish()
         }
     }
 

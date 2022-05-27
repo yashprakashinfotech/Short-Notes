@@ -2,11 +2,13 @@ package com.yash.shortnotes.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.provider.Settings.Global.getString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.yash.shortnotes.R
 import com.yash.shortnotes.model.Note
@@ -29,7 +31,18 @@ class NoteAdapter(val context: Context,
         holder.txtTimeStamp.text = "Last Update : "+ notesPosition.timeStamp
 
         holder.icDelete.setOnClickListener {
-            noteClickDeleteInterface.onDeleteIconClick(notesPosition)
+
+            val deleteNoteAlertDialog: AlertDialog.Builder = AlertDialog.Builder(context)
+            deleteNoteAlertDialog.setTitle("Alert!")
+            deleteNoteAlertDialog.setMessage("Are you sure to Delete the Note: ${notesPosition.noteTitle}?")
+            deleteNoteAlertDialog.setPositiveButton("Yes") { dialog, _ ->
+                noteClickDeleteInterface.onDeleteIconClick(notesPosition)
+                dialog.dismiss() }
+                .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            deleteNoteAlertDialog.show()
+
+
+//            noteClickDeleteInterface.onDeleteIconClick(notesPosition)
         }
         holder.itemView.setOnClickListener {
             noteClickInterface.onNoteClick(notesPosition)

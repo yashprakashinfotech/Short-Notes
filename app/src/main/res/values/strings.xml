@@ -3,4 +3,6 @@
     <string name="enter_note_title">Enter Note Title</string>
     <string name="enter_note_description">Enter Note Description</string>
     <string name="button">Button</string>
+
+    <string name="alert">Alert</string>
 </resources>
