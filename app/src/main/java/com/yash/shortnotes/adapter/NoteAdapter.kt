@@ -2,7 +2,6 @@ package com.yash.shortnotes.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.provider.Settings.Global.getString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,9 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yash.shortnotes.R
 import com.yash.shortnotes.model.Note
 
-class NoteAdapter(val context: Context,
-                  private val noteClickDeleteInterface: NoteClickDeleteInterface,
-                  private val noteClickInterface: NoteClickInterface) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
+class NoteAdapter(
+    private val context: Context,
+    private val noteClickDeleteInterface: NoteClickDeleteInterface,
+    private val noteClickInterface: NoteClickInterface) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
 
     private val allNote = ArrayList<Note>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
