@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
         fabNote.setOnClickListener {
             val i = Intent(this,AddEditActivity::class.java)
             startActivity(i)
-            this.finish()
+//            this.finish()
         }
 
     }
@@ -68,9 +68,9 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
         i.putExtra(KeyClass.KEY_NOTE_TYPE,"Edit")
         i.putExtra(KeyClass.KEY_NOTE_TITLE,note.noteTitle)
         i.putExtra(KeyClass.KEY_NOTE_DESCRIPTION,note.noteDescription)
+        i.putExtra(KeyClass.KEY_NOTE_ALERT_TIME,note.alertTime)
         i.putExtra(KeyClass.KEY_NOTE_ID,note.id)
         startActivity(i)
-        this.finish()
     }
 
     override fun onDeleteIconClick(note: Note) {

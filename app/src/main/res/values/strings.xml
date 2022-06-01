@@ -5,7 +5,7 @@
     <string name="button">Button</string>
 
     <string name="alert">Alert</string>
-    <string name="dd_MM_yyyy">dd/MM/yyyy</string>
+    <string name="dd_MM_yyyy">yyyy-MM-dd</string>
     <string name="hh_mm">HH:mm</string>
     <string name="alarm">Alarm</string>
     <string name="note_title">Note Title</string>

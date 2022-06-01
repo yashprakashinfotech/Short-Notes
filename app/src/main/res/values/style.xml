@@ -5,7 +5,7 @@
 
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:ems">10</item>
-        <item name="android:enabled">false</item>
+        <item name="android:enabled">true</item>
         <item name="android:padding">10dp</item>
         <item name="paddingStart">25dp</item>
         <item name="android:textSize">16sp</item>

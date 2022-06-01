@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.format.DateFormat
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -33,6 +34,10 @@ class AddEditActivity : AppCompatActivity() {
     private lateinit var noteViewModel : NoteViewModel
     private var noteId = -1
 
+    private var noteAlertTime = ""
+    private var dateSetMillis = ""
+    private var timeSetMillis = ""
+
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +53,7 @@ class AddEditActivity : AppCompatActivity() {
 
             val noteTitle = intent.getStringExtra(KeyClass.KEY_NOTE_TITLE)
             val noteDescription = intent.getStringExtra(KeyClass.KEY_NOTE_DESCRIPTION)
+            noteAlertTime = intent.getStringExtra(KeyClass.KEY_NOTE_ALERT_TIME)!!
             noteId = intent.getIntExtra(KeyClass.KEY_NOTE_ID,-1)
 
             btnAddUpdate.text = updateBtnText
@@ -59,6 +65,23 @@ class AddEditActivity : AppCompatActivity() {
             btnAddUpdate.text = saveBtnText
         }
 
+        // Check Date Is available from Database in notes
+        if (noteAlertTime.isNotEmpty()){
+            switchAlarm.isChecked = true
+            etTime.visibility = View.VISIBLE
+            etDate.visibility = View.VISIBLE
+
+            val millis = noteAlertTime.toLong()
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+            val millisDate = formatter.format(Date(millis))
+
+            dateSetMillis = millisDate.substring(0,10)
+            timeSetMillis = millisDate.substring(11,16)
+
+            etTime.setText(timeSetMillis)
+            etDate.setText(dateSetMillis)
+        }
+
         btnAddUpdate.setOnClickListener {
             val noteTitle = etNoteTitle.text.toString()
             val noteDescription = etNoteDescription.text.toString()
@@ -66,7 +89,8 @@ class AddEditActivity : AppCompatActivity() {
             val datePick = etDate.text.toString()
             val timePick = etTime.text.toString()
 
-            if (switchAlarm.isChecked){  // Check Switch is active or not
+
+            if (switchAlarm.isChecked){  // Check Switch is active
 
                 if (noteType == "Edit"){ // Update the Note
 
@@ -83,10 +107,42 @@ class AddEditActivity : AppCompatActivity() {
                         Toast.makeText(this,"Note Time is not Pick", Toast.LENGTH_SHORT).show()
                     }
                     else{
+
+//                        if (datePick.isNotEmpty() && timePick.isNotEmpty()){
+//
+//                            val myDate = "$etDate $etTime:00"
+////                            val myDate = "2014/10/29 18:10:45"
+//                            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+//                            val date = sdf.parse(myDate)
+//                            val millis = date?.time
+//                            Log.d("boss","$millis")
+//
+//                            val alertTimeMillis = millis
+//
+//                            val iBroadCast = Intent(this,MyTimerReceiver::class.java)
+//
+//                            pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,
+//                                PendingIntent.FLAG_UPDATE_CURRENT)
+//
+//                            alarmManager.set(AlarmManager.RTC_WAKEUP,millis!!, pi)
+//                            Toast.makeText(this,"Alarm Set!",Toast.LENGTH_SHORT).show()
+//                        }else{
+//                            Toast.makeText(this,"Please select Date And Time!",Toast.LENGTH_SHORT).show()
+//                        }
+
+                        // Set the Time For Alert
+                        val myDate = "$datePick $timePick:00"
+
+                        val sdfAlert = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                        val date = sdfAlert.parse(myDate)
+                        val millis = date?.time
+                        Log.d("boss","$millis")
+                        val alertTimeMillis = millis.toString()
+
                         // for set date and time at note change
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
-                        val updateNote = Note(noteTitle,noteDescription,currentDate)
+                        val updateNote = Note(noteTitle,noteDescription,currentDate,alertTimeMillis)
                         updateNote.id = noteId
                         noteViewModel.updateNote(updateNote)
                         Toast.makeText(this,"Note Update", Toast.LENGTH_SHORT).show()
@@ -117,9 +173,18 @@ class AddEditActivity : AppCompatActivity() {
                     }
                     else{ // All validation is correct
 
+                        // Set the Time For Alert
+                        val myDate = "$datePick $timePick:00"
+//                        val myDate = "2014/10/29 18:10:45"
+                        val sdfAlert = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                        val date = sdfAlert.parse(myDate)
+                        val millis = date?.time
+                        Log.d("boss","$millis")
+                        val alertTimeMillis = millis.toString()
+
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
-                        noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate))
+                        noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate,alertTimeMillis))
                         Toast.makeText(this,"Note Added", Toast.LENGTH_SHORT).show()
 
                         startActivity(Intent(applicationContext, MainActivity::class.java))
@@ -141,12 +206,14 @@ class AddEditActivity : AppCompatActivity() {
                 }
 
             }else{
+
+                val alertTime = ""
                 if (noteType == "Edit"){ // Update the Note
 
                     if (noteTitle.isNotEmpty() && noteDescription.isNotEmpty()){
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
-                        val updateNote = Note(noteTitle,noteDescription,currentDate)
+                        val updateNote = Note(noteTitle,noteDescription,currentDate,alertTime)
                         updateNote.id = noteId
                         noteViewModel.updateNote(updateNote)
                         Toast.makeText(this,"Note Update", Toast.LENGTH_SHORT).show()
@@ -156,7 +223,7 @@ class AddEditActivity : AppCompatActivity() {
                     if (noteTitle.isNotEmpty() && noteDescription.isNotEmpty()){
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
-                        noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate))
+                        noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate,alertTime))
                         Toast.makeText(this,"Note Added", Toast.LENGTH_SHORT).show()
 
                         startActivity(Intent(applicationContext, MainActivity::class.java))
@@ -204,20 +271,14 @@ class AddEditActivity : AppCompatActivity() {
 
         switchAlarm.setOnCheckedChangeListener { button, isCheck ->
             if (isCheck){
-
                 etTime.visibility = View.VISIBLE
                 etDate.visibility = View.VISIBLE
-                etDate.isEnabled = true
-                etTime.isEnabled = true
-
 
             }else{
-
                 etTime.visibility = View.GONE
                 etDate.visibility = View.GONE
             }
         }
-
     }
 
     private fun initView() {
@@ -250,7 +311,8 @@ class AddEditActivity : AppCompatActivity() {
                 cal.set(Calendar.YEAR, year)
                 cal.set(Calendar.MONTH, month)
                 cal.set(Calendar.DAY_OF_MONTH, day)
-                val myFormat = "dd-MM-yyyy"
+                val myFormat = "yyyy-MM-dd"
+//                val myFormat = "dd-MM-yyyy"
                 val dateFormat = SimpleDateFormat(myFormat, Locale.US)
                 etDate.setText(dateFormat.format(cal.time))    // Set Date in EditText
             }
@@ -264,8 +326,7 @@ class AddEditActivity : AppCompatActivity() {
                 cal.get(Calendar.DAY_OF_MONTH)
             )
 
-            //for max date set (At current Time & Date)
-//            dateDialog.datePicker.maxDate = cal1.timeInMillis
+            //for min date set (At current Time & Date)
             dateDialog.datePicker.minDate = cal1.timeInMillis
             dateDialog.show()
         }
@@ -283,13 +344,37 @@ class AddEditActivity : AppCompatActivity() {
         // timePicker Format according to System Format
         val clockFormat = if (isSystem24Hour) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
 
-        // build the MaterialTimePicker Dialog
-        mTimePicker = MaterialTimePicker.Builder()
-            .setTimeFormat(clockFormat)
-            .setHour(12)
-            .setMinute(0)
-            .setTitleText("Set Time")
-            .build()
+        if (timeSetMillis.isNotEmpty()){
+
+            val h = timeSetMillis.substring(0,2)
+            val hour = h.toInt()
+            val m = timeSetMillis.substring(3)
+            val minutes = m.toInt()
+
+            // build the MaterialTimePicker Dialog
+            mTimePicker = MaterialTimePicker.Builder()
+                .setTimeFormat(clockFormat)
+                .setHour(hour)
+                .setMinute(minutes)
+                .setTitleText("Set Time")
+                .build()
+        }
+        else{
+            // build the MaterialTimePicker Dialog
+            mTimePicker = MaterialTimePicker.Builder()
+                .setTimeFormat(clockFormat)
+                .setHour(12)
+                .setMinute(0)
+                .setTitleText("Set Time")
+                .build()
+        }
+//        // build the MaterialTimePicker Dialog
+//        mTimePicker = MaterialTimePicker.Builder()
+//            .setTimeFormat(clockFormat)
+//            .setHour(8)
+//            .setMinute(30)
+//            .setTitleText("Set Time")
+//            .build()
 
         // Show the MaterialTimePicker
         mTimePicker.show(supportFragmentManager,"Boss")
@@ -298,7 +383,7 @@ class AddEditActivity : AppCompatActivity() {
         mTimePicker.addOnPositiveButtonClickListener {
             val hour = mTimePicker.hour
             val minute = mTimePicker.minute
-            etTime.setText(String.format("%02d : %02d",hour,minute))
+            etTime.setText(String.format("%02d:%02d",hour,minute))
         }
 
     }
