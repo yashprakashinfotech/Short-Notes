@@ -8,4 +8,6 @@
     <string name="dd_MM_yyyy">dd/MM/yyyy</string>
     <string name="hh_mm">HH:mm</string>
     <string name="alarm">Alarm</string>
+    <string name="note_title">Note Title</string>
+    <string name="updated_at_time">Updated At Time</string>
 </resources>

@@ -22,7 +22,7 @@
             android:layout_margin="3dp"
             android:layout_toStartOf="@id/icDelete"
             android:padding="4dp"
-            android:text="Note"
+            android:text="@string/note_title"
             android:textColor="@color/white"
             android:textSize="18sp" />
 
@@ -35,7 +35,7 @@
             android:layout_margin="3dp"
             android:layout_toStartOf="@id/icDelete"
             android:padding="4dp"
-            android:text="Updated At"
+            android:text="@string/updated_at_time"
             android:textColor="@color/white"
             android:textSize="13sp" />
 
