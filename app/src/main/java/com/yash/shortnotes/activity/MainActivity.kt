@@ -1,6 +1,9 @@
 package com.yash.shortnotes.activity
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -30,6 +33,7 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
         setContentView(R.layout.activity_main)
 
         initView()
+        createNotificationChannel()
 
         // Live data show using life cycle observer
         noteViewModel.allNotes.observe(this, Observer { list ->
@@ -76,5 +80,20 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
     override fun onDeleteIconClick(note: Note) {
         noteViewModel.deleteNote(note)
         Toast.makeText(this,"${note.noteTitle} Delete", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun createNotificationChannel(){
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+            val name : CharSequence = "Alarm Reminder"
+            val description = "Channel For Alarm Manager"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("alarmId",name,importance)
+            channel.description = description
+            val notificationManager = getSystemService(NotificationManager::class.java)
+
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 }

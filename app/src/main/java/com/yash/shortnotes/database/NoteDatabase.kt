@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.yash.shortnotes.model.Note
 
-@Database(entities = [Note::class], version = 1, exportSchema = false)
+@Database(entities = [Note::class], version = 1, exportSchema = false)// Inside the database multiple entity or table like Note
 abstract class NoteDatabase : RoomDatabase() {
 
     abstract fun getNotesDao(): NoteDao

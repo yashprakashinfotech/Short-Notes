@@ -1,7 +1,10 @@
 package com.yash.shortnotes.activity
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -16,6 +19,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.yash.shortnotes.R
+import com.yash.shortnotes.helper.AlarmReceiver
 import com.yash.shortnotes.helper.KeyClass
 import com.yash.shortnotes.model.Note
 import com.yash.shortnotes.viewmodel.NoteViewModel
@@ -38,7 +42,13 @@ class AddEditActivity : AppCompatActivity() {
     private var dateSetMillis = ""
     private var timeSetMillis = ""
 
-    @SuppressLint("SimpleDateFormat")
+    private lateinit var iBroadCast : Intent
+    private lateinit var pi : PendingIntent
+
+    private lateinit var alarmManager : AlarmManager
+    private val ALARM_REQUEST_CODE = 100
+
+    @SuppressLint("SimpleDateFormat", "UnspecifiedImmutableFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_edit)
@@ -139,6 +149,11 @@ class AddEditActivity : AppCompatActivity() {
                         Log.d("boss","$millis")
                         val alertTimeMillis = millis.toString()
 
+                        // Set Alarm For Note
+                        iBroadCast = Intent(this,AlarmReceiver::class.java)
+                        pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, millis!!,pi)
+
                         // for set date and time at note change
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
@@ -181,6 +196,12 @@ class AddEditActivity : AppCompatActivity() {
                         val millis = date?.time
                         Log.d("boss","$millis")
                         val alertTimeMillis = millis.toString()
+
+                        // Set Alarm For Note
+                        iBroadCast = Intent(this,AlarmReceiver::class.java)
+                        pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, millis!!,pi)
+
 
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
@@ -291,6 +312,8 @@ class AddEditActivity : AppCompatActivity() {
         btnAddUpdate = findViewById(R.id.btnAddUpdate)
         noteViewModel = ViewModelProvider(this,
             ViewModelProvider.AndroidViewModelFactory.getInstance(application))[NoteViewModel::class.java]
+
+        alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
 
     // For Date Picker

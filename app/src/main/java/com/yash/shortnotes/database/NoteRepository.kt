@@ -3,6 +3,9 @@ package com.yash.shortnotes.database
 import androidx.lifecycle.LiveData
 import com.yash.shortnotes.model.Note
 
+// NoteRepository interact with ViewModel
+// Inside Repository we get all data (sqlite , other Apis ect)
+// that data we have to use operation with viewModel
 class NoteRepository(private val notesDao: NoteDao) {
 
     // on below line we are creating a variable for our list
