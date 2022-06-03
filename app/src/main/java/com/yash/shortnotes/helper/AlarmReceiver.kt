@@ -26,7 +26,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
-            .addAction(R.drawable.ic_notifications,"Stop",pendingIntent)
+//            .addAction(R.drawable.ic_notifications,"Stop",pendingIntent)
 
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.notify(123,builder.build())

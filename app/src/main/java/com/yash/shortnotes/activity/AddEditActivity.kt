@@ -152,7 +152,7 @@ class AddEditActivity : AppCompatActivity() {
                         // Set Alarm For Note
                         iBroadCast = Intent(this,AlarmReceiver::class.java)
                         pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, millis!!,pi)
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis!!,pi)
 
                         // for set date and time at note change
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
@@ -200,7 +200,7 @@ class AddEditActivity : AppCompatActivity() {
                         // Set Alarm For Note
                         iBroadCast = Intent(this,AlarmReceiver::class.java)
                         pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, millis!!,pi)
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis!!,pi)
 
 
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
