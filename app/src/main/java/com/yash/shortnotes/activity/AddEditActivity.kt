@@ -6,7 +6,6 @@ import android.app.DatePickerDialog
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
@@ -14,6 +13,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -25,6 +25,7 @@ import com.yash.shortnotes.model.Note
 import com.yash.shortnotes.viewmodel.NoteViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class AddEditActivity : AppCompatActivity() {
 
@@ -46,7 +47,7 @@ class AddEditActivity : AppCompatActivity() {
     private lateinit var pi : PendingIntent
 
     private lateinit var alarmManager : AlarmManager
-    private val ALARM_REQUEST_CODE = 100
+    private var ALARM_REQUEST_CODE = 100
 
     @SuppressLint("SimpleDateFormat", "UnspecifiedImmutableFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +55,9 @@ class AddEditActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_edit)
         supportActionBar?.hide()
         initView()
+
+        // this is the Multiple alarm View
+//        multipleAlarm()
 
         val noteType = intent.getStringExtra(KeyClass.KEY_NOTE_TYPE)
         val updateBtnText = "Update Note"
@@ -151,7 +155,7 @@ class AddEditActivity : AppCompatActivity() {
 
                         // Set Alarm For Note
                         iBroadCast = Intent(this,AlarmReceiver::class.java)
-                        pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
+                        val pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis!!,pi)
 
                         // for set date and time at note change
@@ -202,6 +206,8 @@ class AddEditActivity : AppCompatActivity() {
                         pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis!!,pi)
 
+                        pi = PendingIntent.getBroadcast(this,1,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP,millis+20000,pi)
 
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
@@ -302,6 +308,40 @@ class AddEditActivity : AppCompatActivity() {
         }
     }
 
+    // try Multiple alarm
+//    private fun multipleAlarm(){
+//
+//        val minutes = ArrayList<Long>()
+//
+//        minutes.add(1654498080000)
+//        minutes.add(1654498140000)
+//        minutes.add(1654498200000)
+//        minutes.add(1654498260000)
+//
+//        val alarmManagers = arrayOfNulls<AlarmManager>(minutes.size)
+//        val intents = arrayOfNulls<Intent>(alarmManagers.size)
+//
+//        for (i in alarmManagers.indices) {
+//            intents[i] = Intent(applicationContext, AlarmReceiver::class.java)
+//            /*
+//        Here is very important,when we set one alarm, pending intent id becomes zero
+//        but if we want set multiple alarms pending intent id has to be unique so i counter
+//        is enough to be unique for PendingIntent
+//      */
+////            val pendingIntent: PendingIntent = PendingIntent.getBroadCast(applicationContext, i, intents[i], 0)
+//            val pendingIntent: PendingIntent = PendingIntent.getBroadcast(applicationContext, i, intents[i]!!, 0)
+//
+//            val calendar = Calendar.getInstance()
+//            calendar[Calendar.MINUTE] = minutes[i].toInt()
+//            alarmManagers[i] = applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
+////            alarmManagers[i]!![AlarmManager.RTC_WAKEUP, calendar.timeInMillis] = pendingIntent
+//            alarmManagers[i]!!.setExact(AlarmManager.RTC_WAKEUP,calendar.timeInMillis,pendingIntent)
+////            alarmManagers[i]!![AlarmManager.RTC_WAKEUP, calendar.getTimeInMilis()] = pendingIntent
+//        }
+//
+////        val alarmManager  = AlarmManager[minutes.size]()
+//    }
+
     private fun initView() {
 
         etNoteTitle = findViewById(R.id.etNoteTitle)
@@ -335,7 +375,6 @@ class AddEditActivity : AppCompatActivity() {
                 cal.set(Calendar.MONTH, month)
                 cal.set(Calendar.DAY_OF_MONTH, day)
                 val myFormat = "yyyy-MM-dd"
-//                val myFormat = "dd-MM-yyyy"
                 val dateFormat = SimpleDateFormat(myFormat, Locale.US)
                 etDate.setText(dateFormat.format(cal.time))    // Set Date in EditText
             }
