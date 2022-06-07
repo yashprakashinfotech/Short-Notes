@@ -23,4 +23,7 @@ interface NoteDao {
     // below method is use to update the note.
     @Update
     suspend fun update(note: Note)
+
+//    @Query("Select * from notesTable")
+//    fun getData(note: Note): List<Note>
 }

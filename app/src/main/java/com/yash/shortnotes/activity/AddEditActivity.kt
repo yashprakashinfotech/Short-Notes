@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.room.PrimaryKey
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -25,6 +26,7 @@ import com.yash.shortnotes.model.Note
 import com.yash.shortnotes.viewmodel.NoteViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class AddEditActivity : AppCompatActivity() {
@@ -46,8 +48,12 @@ class AddEditActivity : AppCompatActivity() {
     private lateinit var iBroadCast : Intent
     private lateinit var pi : PendingIntent
 
+    private lateinit var millisArray: ArrayList<Long>
+
     private lateinit var alarmManager : AlarmManager
-    private var ALARM_REQUEST_CODE = 100
+
+    @PrimaryKey(autoGenerate = true)
+    var ALARM_REQUEST_CODE = 1000
 
     @SuppressLint("SimpleDateFormat", "UnspecifiedImmutableFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,12 +65,44 @@ class AddEditActivity : AppCompatActivity() {
         // this is the Multiple alarm View
 //        multipleAlarm()
 
+//        iBroadCast = Intent(this,AlarmReceiver::class.java)
+//
+//        try {
+//            for (i in 0..millisArray.size){
+//                val pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
+//                alarmManager.setExact(AlarmManager.RTC_WAKEUP, millisArray[i],pi)
+//                ALARM_REQUEST_CODE++
+//            }
+//        }
+//        catch (e:Exception){
+//            e.printStackTrace()
+//        }
+
+
+        // datePicker
+        datePicker()
+        etTime.setOnClickListener {
+            mTimePicker() // TimePicker
+        }
+
+        // Alarm Switch
+        switchAlarm.setOnCheckedChangeListener { button, isCheck ->
+            if (isCheck){
+                etTime.visibility = View.VISIBLE
+                etDate.visibility = View.VISIBLE
+
+            }else{
+                etTime.visibility = View.GONE
+                etDate.visibility = View.GONE
+            }
+        }
+
+        // note Type from main Activity
         val noteType = intent.getStringExtra(KeyClass.KEY_NOTE_TYPE)
         val updateBtnText = "Update Note"
         val saveBtnText = "Save Note"
-
+        // NoteType Check Edit or New Add
         if (noteType == "Edit"){
-
             val noteTitle = intent.getStringExtra(KeyClass.KEY_NOTE_TITLE)
             val noteDescription = intent.getStringExtra(KeyClass.KEY_NOTE_DESCRIPTION)
             noteAlertTime = intent.getStringExtra(KeyClass.KEY_NOTE_ALERT_TIME)!!
@@ -103,46 +141,11 @@ class AddEditActivity : AppCompatActivity() {
             val datePick = etDate.text.toString()
             val timePick = etTime.text.toString()
 
-
             if (switchAlarm.isChecked){  // Check Switch is active
 
                 if (noteType == "Edit"){ // Update the Note
 
-                    if (noteTitle.isEmpty()){
-                        Toast.makeText(this,"Note Title is Empty", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (noteDescription.isEmpty()){
-                        Toast.makeText(this,"Note Description is Empty", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (datePick.isEmpty()){
-                        Toast.makeText(this,"Note Date is not Pick", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (timePick.isEmpty()){
-                        Toast.makeText(this,"Note Time is not Pick", Toast.LENGTH_SHORT).show()
-                    }
-                    else{
-
-//                        if (datePick.isNotEmpty() && timePick.isNotEmpty()){
-//
-//                            val myDate = "$etDate $etTime:00"
-////                            val myDate = "2014/10/29 18:10:45"
-//                            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-//                            val date = sdf.parse(myDate)
-//                            val millis = date?.time
-//                            Log.d("boss","$millis")
-//
-//                            val alertTimeMillis = millis
-//
-//                            val iBroadCast = Intent(this,MyTimerReceiver::class.java)
-//
-//                            pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,
-//                                PendingIntent.FLAG_UPDATE_CURRENT)
-//
-//                            alarmManager.set(AlarmManager.RTC_WAKEUP,millis!!, pi)
-//                            Toast.makeText(this,"Alarm Set!",Toast.LENGTH_SHORT).show()
-//                        }else{
-//                            Toast.makeText(this,"Please select Date And Time!",Toast.LENGTH_SHORT).show()
-//                        }
+                    if (validationWithAlarm()){ // Check Field validation
 
                         // Set the Time For Alert
                         val myDate = "$datePick $timePick:00"
@@ -153,45 +156,30 @@ class AddEditActivity : AppCompatActivity() {
                         Log.d("boss","$millis")
                         val alertTimeMillis = millis.toString()
 
-                        // Set Alarm For Note
-                        iBroadCast = Intent(this,AlarmReceiver::class.java)
-                        val pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis!!,pi)
-
                         // for set date and time at note change
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
                         val updateNote = Note(noteTitle,noteDescription,currentDate,alertTimeMillis)
                         updateNote.id = noteId
                         noteViewModel.updateNote(updateNote)
-                        Toast.makeText(this,"Note Update", Toast.LENGTH_SHORT).show()
-                    }
 
-//                    if (noteTitle.isNotEmpty() && noteDescription.isNotEmpty() && datePick.isNotEmpty() && timePick.isNotEmpty()){
-//                        val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
-//                        val currentDate: String = sdf.format(Date())
-//                        val updateNote = Note(noteTitle,noteDescription,currentDate)
-//                        updateNote.id = noteId
-//                        noteViewModel.updateNote(updateNote)
-//                        Toast.makeText(this,"Note Update", Toast.LENGTH_SHORT).show()
-//                    }
+                        // Set Alarm For Note
+                        iBroadCast = Intent(this,AlarmReceiver::class.java)
+                        iBroadCast.putExtra(KeyClass.KEY_PENDING_TITLE,noteTitle)
+                        iBroadCast.putExtra(KeyClass.KEY_PENDING_DESCRIPTION,noteDescription)
+                        iBroadCast.putExtra(KeyClass.KEY_PENDING_DATE,datePick)
+                        iBroadCast.putExtra(KeyClass.KEY_PENDING_TIME,timePick)
+                        val pi = PendingIntent.getBroadcast(this,updateNote.id,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis!!,pi)
+
+                        Toast.makeText(this,"Note Update", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(applicationContext, MainActivity::class.java))
+                        this.finish()
+                    }
 
                 }else{ // Add the New Note
 
-                    if (noteTitle.isEmpty()){
-                        Toast.makeText(this,"Note Title is Empty", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (noteDescription.isEmpty()){
-                        Toast.makeText(this,"Note Description is Empty", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (datePick.isEmpty()){
-                        Toast.makeText(this,"Note Date is not Pick", Toast.LENGTH_SHORT).show()
-                    }
-                    else if (timePick.isEmpty()){
-                        Toast.makeText(this,"Note Time is not Pick", Toast.LENGTH_SHORT).show()
-                    }
-                    else{ // All validation is correct
-
+                    if (validationWithAlarm()){ // Check Field Validation
                         // Set the Time For Alert
                         val myDate = "$datePick $timePick:00"
 //                        val myDate = "2014/10/29 18:10:45"
@@ -201,38 +189,29 @@ class AddEditActivity : AppCompatActivity() {
                         Log.d("boss","$millis")
                         val alertTimeMillis = millis.toString()
 
+                        val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
+                        val currentDate: String = sdf.format(Date())
+                        val insertRow = noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate,alertTimeMillis))
+//                        val dataValue = noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate,alertTimeMillis).id)
+//                        val dataValue = Note(noteTitle,noteDescription,currentDate,alertTimeMillis).id
+
                         // Set Alarm For Note
                         iBroadCast = Intent(this,AlarmReceiver::class.java)
+                        iBroadCast.putExtra(KeyClass.KEY_PENDING_TITLE,noteTitle)
+                        iBroadCast.putExtra(KeyClass.KEY_PENDING_DESCRIPTION,noteDescription)
+                        iBroadCast.putExtra(KeyClass.KEY_PENDING_DATE,datePick)
+                        iBroadCast.putExtra(KeyClass.KEY_PENDING_TIME,timePick)
                         pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis!!,pi)
 
-                        pi = PendingIntent.getBroadcast(this,1,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP,millis+20000,pi)
-
-                        val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
-                        val currentDate: String = sdf.format(Date())
-                        noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate,alertTimeMillis))
                         Toast.makeText(this,"Note Added", Toast.LENGTH_SHORT).show()
 
                         startActivity(Intent(applicationContext, MainActivity::class.java))
                         this.finish()
                     }
-
-//                    if (noteTitle.isNotEmpty() && noteDescription.isNotEmpty() && datePick.isNotEmpty() && timePick.isNotEmpty()){
-//                        val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
-//                        val currentDate: String = sdf.format(Date())
-//                        noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate))
-//                        Toast.makeText(this,"Note Added", Toast.LENGTH_SHORT).show()
-//
-//                        startActivity(Intent(applicationContext, MainActivity::class.java))
-//                        this.finish()
-//                    }
-//                    else{
-//                        Toast.makeText(this,"Please Write Note!", Toast.LENGTH_SHORT).show()
-//                    }
                 }
 
-            }else{
+            }else{ // When switch is not active.
 
                 val alertTime = ""
                 if (noteType == "Edit"){ // Update the Note
@@ -260,52 +239,9 @@ class AddEditActivity : AppCompatActivity() {
                     }
                 }
             }
-
-//            if (noteType == "Edit"){ // Update the Note
-//
-//                if (noteTitle.isNotEmpty() && noteDescription.isNotEmpty()){
-//                    val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
-//                    val currentDate: String = sdf.format(Date())
-//                    val updateNote = Note(noteTitle,noteDescription,currentDate)
-//                    updateNote.id = noteId
-//                    noteViewModel.updateNote(updateNote)
-//                    Toast.makeText(this,"Note Update", Toast.LENGTH_SHORT).show()
-//                }
-//
-//            }else{ // Add the New Note
-//                if (noteTitle.isNotEmpty() && noteDescription.isNotEmpty()){
-//                    val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
-//                    val currentDate: String = sdf.format(Date())
-//                    noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate))
-//                    Toast.makeText(this,"Note Added", Toast.LENGTH_SHORT).show()
-//
-//                    startActivity(Intent(applicationContext, MainActivity::class.java))
-//                    this.finish()
-//                }else{
-//                    Toast.makeText(this,"Please Write Note!", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-
-//            startActivity(Intent(applicationContext, MainActivity::class.java))
-//            this.finish()
         }
 
-        datePicker()
 
-        etTime.setOnClickListener {
-            mTimePicker()
-        }
-
-        switchAlarm.setOnCheckedChangeListener { button, isCheck ->
-            if (isCheck){
-                etTime.visibility = View.VISIBLE
-                etDate.visibility = View.VISIBLE
-
-            }else{
-                etTime.visibility = View.GONE
-                etDate.visibility = View.GONE
-            }
-        }
     }
 
     // try Multiple alarm
@@ -354,6 +290,7 @@ class AddEditActivity : AppCompatActivity() {
             ViewModelProvider.AndroidViewModelFactory.getInstance(application))[NoteViewModel::class.java]
 
         alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        millisArray = ArrayList()
     }
 
     // For Date Picker
@@ -447,6 +384,32 @@ class AddEditActivity : AppCompatActivity() {
             val minute = mTimePicker.minute
             etTime.setText(String.format("%02d:%02d",hour,minute))
         }
+
+    }
+
+    private fun validationWithAlarm() : Boolean{
+        val noteTitle = etNoteTitle.text.toString()
+        val noteDescription = etNoteDescription.text.toString()
+
+        val datePick = etDate.text.toString()
+        val timePick = etTime.text.toString()
+
+        if (noteTitle.isEmpty()){
+            Toast.makeText(this,"Note Title is Empty", Toast.LENGTH_SHORT).show()
+        }
+        else if (noteDescription.isEmpty()){
+            Toast.makeText(this,"Note Description is Empty", Toast.LENGTH_SHORT).show()
+        }
+        else if (datePick.isEmpty()){
+            Toast.makeText(this,"Note Date is not Pick", Toast.LENGTH_SHORT).show()
+        }
+        else if (timePick.isEmpty()){
+            Toast.makeText(this,"Note Time is not Pick", Toast.LENGTH_SHORT).show()
+        }
+        else{
+            return true
+        }
+        return false
 
     }
 }

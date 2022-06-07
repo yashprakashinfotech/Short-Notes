@@ -30,4 +30,8 @@ class NoteRepository(private val notesDao: NoteDao) {
         notesDao.update(note)
     }
 
+//    suspend fun getData(note: Note){
+//        notesDao.getData(note)
+//    }
+
 }
