@@ -15,7 +15,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.room.PrimaryKey
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -41,6 +40,8 @@ class AddEditActivity : AppCompatActivity() {
     private lateinit var noteViewModel : NoteViewModel
     private var noteId = -1
 
+//    var maxId = 0
+
     private var noteAlertTime = ""
     private var dateSetMillis = ""
     private var timeSetMillis = ""
@@ -52,7 +53,6 @@ class AddEditActivity : AppCompatActivity() {
 
     private lateinit var alarmManager : AlarmManager
 
-    @PrimaryKey(autoGenerate = true)
     var ALARM_REQUEST_CODE = 1000
 
     @SuppressLint("SimpleDateFormat", "UnspecifiedImmutableFlag")
@@ -61,23 +61,6 @@ class AddEditActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_edit)
         supportActionBar?.hide()
         initView()
-
-        // this is the Multiple alarm View
-//        multipleAlarm()
-
-//        iBroadCast = Intent(this,AlarmReceiver::class.java)
-//
-//        try {
-//            for (i in 0..millisArray.size){
-//                val pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
-//                alarmManager.setExact(AlarmManager.RTC_WAKEUP, millisArray[i],pi)
-//                ALARM_REQUEST_CODE++
-//            }
-//        }
-//        catch (e:Exception){
-//            e.printStackTrace()
-//        }
-
 
         // datePicker
         datePicker()
@@ -160,7 +143,7 @@ class AddEditActivity : AppCompatActivity() {
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
                         val updateNote = Note(noteTitle,noteDescription,currentDate,alertTimeMillis)
-                        updateNote.id = noteId
+//                        updateNote.id = noteId
                         noteViewModel.updateNote(updateNote)
 
                         // Set Alarm For Note
@@ -169,7 +152,10 @@ class AddEditActivity : AppCompatActivity() {
                         iBroadCast.putExtra(KeyClass.KEY_PENDING_DESCRIPTION,noteDescription)
                         iBroadCast.putExtra(KeyClass.KEY_PENDING_DATE,datePick)
                         iBroadCast.putExtra(KeyClass.KEY_PENDING_TIME,timePick)
-                        val pi = PendingIntent.getBroadcast(this,updateNote.id,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
+                        val pi = updateNote.id?.let { it1 ->
+                            PendingIntent.getBroadcast(this,
+                                it1,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
+                        }
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis!!,pi)
 
                         Toast.makeText(this,"Note Update", Toast.LENGTH_SHORT).show()
@@ -191,7 +177,13 @@ class AddEditActivity : AppCompatActivity() {
 
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
-                        val insertRow = noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate,alertTimeMillis))
+                        noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate,alertTimeMillis))
+
+//                        val maxId = noteViewModel.getMaxId(1)
+////                        val maxId = noteViewModel.getMaxId(NoteDatabase.getDatabase(this).getNotesDao().getMaxId(id = ColumnInfo))
+//
+//                        Log.d("boss","$maxId")
+
 //                        val dataValue = noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate,alertTimeMillis).id)
 //                        val dataValue = Note(noteTitle,noteDescription,currentDate,alertTimeMillis).id
 
@@ -240,43 +232,7 @@ class AddEditActivity : AppCompatActivity() {
                 }
             }
         }
-
-
     }
-
-    // try Multiple alarm
-//    private fun multipleAlarm(){
-//
-//        val minutes = ArrayList<Long>()
-//
-//        minutes.add(1654498080000)
-//        minutes.add(1654498140000)
-//        minutes.add(1654498200000)
-//        minutes.add(1654498260000)
-//
-//        val alarmManagers = arrayOfNulls<AlarmManager>(minutes.size)
-//        val intents = arrayOfNulls<Intent>(alarmManagers.size)
-//
-//        for (i in alarmManagers.indices) {
-//            intents[i] = Intent(applicationContext, AlarmReceiver::class.java)
-//            /*
-//        Here is very important,when we set one alarm, pending intent id becomes zero
-//        but if we want set multiple alarms pending intent id has to be unique so i counter
-//        is enough to be unique for PendingIntent
-//      */
-////            val pendingIntent: PendingIntent = PendingIntent.getBroadCast(applicationContext, i, intents[i], 0)
-//            val pendingIntent: PendingIntent = PendingIntent.getBroadcast(applicationContext, i, intents[i]!!, 0)
-//
-//            val calendar = Calendar.getInstance()
-//            calendar[Calendar.MINUTE] = minutes[i].toInt()
-//            alarmManagers[i] = applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
-////            alarmManagers[i]!![AlarmManager.RTC_WAKEUP, calendar.timeInMillis] = pendingIntent
-//            alarmManagers[i]!!.setExact(AlarmManager.RTC_WAKEUP,calendar.timeInMillis,pendingIntent)
-////            alarmManagers[i]!![AlarmManager.RTC_WAKEUP, calendar.getTimeInMilis()] = pendingIntent
-//        }
-//
-////        val alarmManager  = AlarmManager[minutes.size]()
-//    }
 
     private fun initView() {
 
@@ -367,13 +323,6 @@ class AddEditActivity : AppCompatActivity() {
                 .setTitleText("Set Time")
                 .build()
         }
-//        // build the MaterialTimePicker Dialog
-//        mTimePicker = MaterialTimePicker.Builder()
-//            .setTimeFormat(clockFormat)
-//            .setHour(8)
-//            .setMinute(30)
-//            .setTitleText("Set Time")
-//            .build()
 
         // Show the MaterialTimePicker
         mTimePicker.show(supportFragmentManager,"Boss")

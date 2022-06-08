@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +17,7 @@ import com.yash.shortnotes.R
 import com.yash.shortnotes.adapter.NoteAdapter
 import com.yash.shortnotes.adapter.NoteClickDeleteInterface
 import com.yash.shortnotes.adapter.NoteClickInterface
+import com.yash.shortnotes.database.NoteDao
 import com.yash.shortnotes.helper.KeyClass
 import com.yash.shortnotes.model.Note
 import com.yash.shortnotes.viewmodel.NoteViewModel
@@ -28,6 +30,8 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
     private lateinit var noteViewModel : NoteViewModel
     private lateinit var noteAdapter : NoteAdapter
 
+    private lateinit var noteDao: NoteDao
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,6 +39,11 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
         initView()
         createNotificationChannel()
 
+        // try to get All data
+//        val getAllNotes = noteDao.getAllNotes()
+//        val i = getAllNotes.value?.size
+//        Log.d("Boss","$i")
+//        noteViewModel.getMaxId(noteViewModel.allNotes)
         // Live data show using life cycle observer
         noteViewModel.allNotes.observe(this, Observer { list ->
             list?.let {
@@ -45,7 +54,6 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
         fabNote.setOnClickListener {
             val i = Intent(this,AddEditActivity::class.java)
             startActivity(i)
-//            this.finish()
         }
 
     }
@@ -70,16 +78,16 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
     override fun onNoteClick(note: Note) {
         val i = Intent(this,AddEditActivity::class.java)
         i.putExtra(KeyClass.KEY_NOTE_TYPE,"Edit")
-        i.putExtra(KeyClass.KEY_NOTE_TITLE,note.noteTitle)
-        i.putExtra(KeyClass.KEY_NOTE_DESCRIPTION,note.noteDescription)
-        i.putExtra(KeyClass.KEY_NOTE_ALERT_TIME,note.alertTime)
+        i.putExtra(KeyClass.KEY_NOTE_TITLE,note.title)
+        i.putExtra(KeyClass.KEY_NOTE_DESCRIPTION,note.description)
+        i.putExtra(KeyClass.KEY_NOTE_ALERT_TIME,note.alertTimes)
         i.putExtra(KeyClass.KEY_NOTE_ID,note.id)
         startActivity(i)
     }
 
     override fun onDeleteIconClick(note: Note) {
         noteViewModel.deleteNote(note)
-        Toast.makeText(this,"${note.noteTitle} Delete", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this,"${note.title} Delete", Toast.LENGTH_SHORT).show()
     }
 
     private fun createNotificationChannel(){

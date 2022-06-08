@@ -27,14 +27,14 @@ class NoteAdapter(
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
 
         val notesPosition = allNote[position]
-        holder.txtNoteTitle.text = notesPosition.noteTitle
-        holder.txtTimeStamp.text = "Last Update : "+ notesPosition.timeStamp
+        holder.txtNoteTitle.text = notesPosition.title
+        holder.txtTimeStamp.text = "Last Update : "+ notesPosition.timestamp
 
         holder.icDelete.setOnClickListener {
 
             val deleteNoteAlertDialog: AlertDialog.Builder = AlertDialog.Builder(context)
             deleteNoteAlertDialog.setTitle("Alert!")
-            deleteNoteAlertDialog.setMessage("Are you sure to Delete the Note: ${notesPosition.noteTitle}?")
+            deleteNoteAlertDialog.setMessage("Are you sure to Delete the Note: ${notesPosition.title}?")
             deleteNoteAlertDialog.setPositiveButton("Yes") { dialog, _ ->
                 noteClickDeleteInterface.onDeleteIconClick(notesPosition)
                 dialog.dismiss() }
