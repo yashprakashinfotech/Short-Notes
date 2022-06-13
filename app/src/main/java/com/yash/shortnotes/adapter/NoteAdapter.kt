@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.animation.AnimationUtils
 import com.yash.shortnotes.R
 import com.yash.shortnotes.model.Note
 
@@ -29,7 +31,6 @@ class NoteAdapter(
         val notesPosition = allNote[position]
         holder.txtNoteTitle.text = notesPosition.title
         holder.txtTimeStamp.text = "Last Update : "+ notesPosition.timestamp
-
         holder.icDelete.setOnClickListener {
 
             val deleteNoteAlertDialog: AlertDialog.Builder = AlertDialog.Builder(context)
@@ -47,6 +48,7 @@ class NoteAdapter(
         holder.itemView.setOnClickListener {
             noteClickInterface.onNoteClick(notesPosition)
         }
+        holder.cardView.startAnimation(android.view.animation.AnimationUtils.loadAnimation(holder.itemView.context,R.anim.anim_3))
     }
 
     override fun getItemCount(): Int {
@@ -63,6 +65,7 @@ class NoteAdapter(
         val txtNoteTitle : TextView = itemView.findViewById(R.id.txtNoteTitle)
         val txtTimeStamp : TextView = itemView.findViewById(R.id.txtTimeStamp)
         val icDelete : ImageView = itemView.findViewById(R.id.icDelete)
+        val cardView : CardView = itemView.findViewById(R.id.cardView)
     }
 }
 
