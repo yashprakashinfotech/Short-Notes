@@ -53,7 +53,7 @@ class AddEditActivity : AppCompatActivity() {
 
     private lateinit var alarmManager : AlarmManager
 
-    var ALARM_REQUEST_CODE = 1000
+    private var alarmRequestCode = 1000
 
     @SuppressLint("SimpleDateFormat", "UnspecifiedImmutableFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,7 +117,13 @@ class AddEditActivity : AppCompatActivity() {
             etDate.setText(dateSetMillis)
         }
 
+        val maxId = noteViewModel.getMaxId().toString()
+//        val id = maxId.toString()
+//        val idMax = id.toInt()
+        Log.d("boss","Hello $maxId")
+
         btnAddUpdate.setOnClickListener {
+            Log.d("bosses","Hello button $maxId")
             val noteTitle = etNoteTitle.text.toString()
             val noteDescription = etNoteDescription.text.toString()
 
@@ -143,7 +149,7 @@ class AddEditActivity : AppCompatActivity() {
                         val sdf = SimpleDateFormat("dd MMM yyyy - HH:mm")
                         val currentDate: String = sdf.format(Date())
                         val updateNote = Note(noteTitle,noteDescription,currentDate,alertTimeMillis)
-//                        updateNote.id = noteId
+                        updateNote.id = noteId
                         noteViewModel.updateNote(updateNote)
 
                         // Set Alarm For Note
@@ -152,10 +158,8 @@ class AddEditActivity : AppCompatActivity() {
                         iBroadCast.putExtra(KeyClass.KEY_PENDING_DESCRIPTION,noteDescription)
                         iBroadCast.putExtra(KeyClass.KEY_PENDING_DATE,datePick)
                         iBroadCast.putExtra(KeyClass.KEY_PENDING_TIME,timePick)
-                        val pi = updateNote.id?.let { it1 ->
-                            PendingIntent.getBroadcast(this,
-                                it1,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
-                        }
+                        val pi = PendingIntent.getBroadcast(this, updateNote.id!!,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
+
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis!!,pi)
 
                         Toast.makeText(this,"Note Update", Toast.LENGTH_SHORT).show()
@@ -179,9 +183,7 @@ class AddEditActivity : AppCompatActivity() {
                         val currentDate: String = sdf.format(Date())
                         noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate,alertTimeMillis))
 
-//                        val maxId = noteViewModel.getMaxId(1)
-////                        val maxId = noteViewModel.getMaxId(NoteDatabase.getDatabase(this).getNotesDao().getMaxId(id = ColumnInfo))
-//
+//                        val maxId = noteViewModel.getMaxId()
 //                        Log.d("boss","$maxId")
 
 //                        val dataValue = noteViewModel.addNote(Note(noteTitle,noteDescription,currentDate,alertTimeMillis).id)
@@ -193,7 +195,7 @@ class AddEditActivity : AppCompatActivity() {
                         iBroadCast.putExtra(KeyClass.KEY_PENDING_DESCRIPTION,noteDescription)
                         iBroadCast.putExtra(KeyClass.KEY_PENDING_DATE,datePick)
                         iBroadCast.putExtra(KeyClass.KEY_PENDING_TIME,timePick)
-                        pi = PendingIntent.getBroadcast(this,ALARM_REQUEST_CODE,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
+                        pi = PendingIntent.getBroadcast(this,alarmRequestCode,iBroadCast,PendingIntent.FLAG_UPDATE_CURRENT)
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis!!,pi)
 
                         Toast.makeText(this,"Note Added", Toast.LENGTH_SHORT).show()
@@ -215,6 +217,8 @@ class AddEditActivity : AppCompatActivity() {
                         updateNote.id = noteId
                         noteViewModel.updateNote(updateNote)
                         Toast.makeText(this,"Note Update", Toast.LENGTH_SHORT).show()
+                        this.finish()
+                        startActivity(Intent(applicationContext, MainActivity::class.java))
                     }
 
                 }else{ // Add the New Note

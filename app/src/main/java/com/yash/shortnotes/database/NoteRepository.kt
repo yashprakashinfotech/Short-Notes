@@ -1,10 +1,7 @@
 package com.yash.shortnotes.database
 
 import androidx.lifecycle.LiveData
-import androidx.room.ColumnInfo
 import com.yash.shortnotes.model.Note
-import org.jetbrains.annotations.NotNull
-import java.sql.RowId
 
 // NoteRepository interact with ViewModel
 // Inside Repository we get all data (sqlite , other Apis ect)
@@ -33,9 +30,8 @@ class NoteRepository(private val notesDao: NoteDao) {
         notesDao.update(note)
     }
 
-//    @NotNull
-//    suspend fun getMaxID(i:Int){
-//        notesDao.getMaxId(i)
-//    }
+    suspend fun getMaxID() {
+        notesDao.getMaxId()
+    }
 
 }

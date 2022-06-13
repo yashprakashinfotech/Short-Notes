@@ -24,6 +24,6 @@ interface NoteDao {
     @Update
     suspend fun update(note: Note)
 
-//    @Query("SELECT id from notesTable order by id DESC limit 1")
-//    suspend fun getMaxId(i: Int) : Note
+    @Query("SELECT id from notesTable order by id DESC limit 1")
+    suspend fun getMaxId() : Int
 }

@@ -4,13 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import androidx.room.ColumnInfo
 import com.yash.shortnotes.database.NoteDatabase
 import com.yash.shortnotes.database.NoteRepository
 import com.yash.shortnotes.model.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.sql.RowId
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -45,7 +43,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         repository.insert(note)
     }
 
-//    fun getMaxId(i: Int) = viewModelScope.launch(Dispatchers.IO) {
-//        repository.getMaxID(i)
-//    }
+    fun getMaxId() = viewModelScope.launch() {
+        repository.getMaxID()
+    }
 }

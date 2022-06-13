@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +16,6 @@ import com.yash.shortnotes.R
 import com.yash.shortnotes.adapter.NoteAdapter
 import com.yash.shortnotes.adapter.NoteClickDeleteInterface
 import com.yash.shortnotes.adapter.NoteClickInterface
-import com.yash.shortnotes.database.NoteDao
 import com.yash.shortnotes.helper.KeyClass
 import com.yash.shortnotes.model.Note
 import com.yash.shortnotes.viewmodel.NoteViewModel
@@ -29,8 +27,6 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
 
     private lateinit var noteViewModel : NoteViewModel
     private lateinit var noteAdapter : NoteAdapter
-
-    private lateinit var noteDao: NoteDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -37,6 +37,7 @@ class AlarmActivity : AppCompatActivity() {
 
         btnStop.setOnClickListener {
             mp.stop()
+            finish()
         }
     }
 
