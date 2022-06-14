@@ -1,5 +1,6 @@
 package com.yash.shortnotes.activity
 
+import android.app.ActivityOptions
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
@@ -49,7 +50,8 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
         })
         fabNote.setOnClickListener {
             val i = Intent(this,AddEditActivity::class.java)
-            startActivity(i)
+            val b : Bundle =ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+            startActivity(i,b)
         }
 
     }

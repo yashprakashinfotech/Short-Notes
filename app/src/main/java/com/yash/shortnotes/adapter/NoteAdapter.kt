@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.animation.AnimationUtils
 import com.yash.shortnotes.R
 import com.yash.shortnotes.model.Note
 
