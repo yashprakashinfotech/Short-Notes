@@ -25,6 +25,7 @@
         android:layout_margin="20dp"
         android:backgroundTint="@color/light_blue_shade"
         android:src="@drawable/ic_add"
+        android:transitionName="shared_element_to_add_edit"
         app:tint="@color/white"
         tools:ignore="ContentDescription" />
 

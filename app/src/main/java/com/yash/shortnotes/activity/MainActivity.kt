@@ -50,7 +50,8 @@ class MainActivity : AppCompatActivity(), NoteClickDeleteInterface, NoteClickInt
         })
         fabNote.setOnClickListener {
             val i = Intent(this,AddEditActivity::class.java)
-            val b : Bundle =ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+            val b : Bundle =ActivityOptions.makeSceneTransitionAnimation(this,fabNote,fabNote.transitionName).toBundle()
+//            val b : Bundle =ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
             startActivity(i,b)
         }
 

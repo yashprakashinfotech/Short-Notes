@@ -10,14 +10,18 @@ import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.View
+import android.view.Window
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.yash.shortnotes.R
 import com.yash.shortnotes.helper.AlarmReceiver
 import com.yash.shortnotes.helper.KeyClass
@@ -57,8 +61,14 @@ class AddEditActivity : AppCompatActivity() {
 
     @SuppressLint("SimpleDateFormat", "UnspecifiedImmutableFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
         setContentView(R.layout.activity_add_edit)
+
+        setEnterSharedElementCallback(MaterialContainerTransformSharedElementCallback())
+        window.sharedElementEnterTransition = buildTransition()
+        window.sharedElementEnterTransition = buildTransition()
+        window.sharedElementReenterTransition = buildTransition()
+        super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         initView()
 
@@ -364,5 +374,18 @@ class AddEditActivity : AppCompatActivity() {
         }
         return false
 
+    }
+
+    private fun buildTransition(): com.google.android.material.transition.platform.MaterialContainerTransform {
+
+        return com.google.android.material.transition.platform.MaterialContainerTransform().apply {
+            addTarget(R.id.addEdit)
+            setAllContainerColors(MaterialColors.getColor(findViewById(R.id.addEdit),
+                com.google.android.material.R.attr.colorSurface))
+            duration = 400
+            pathMotion = com.google.android.material.transition.platform.MaterialArcMotion()
+            interpolator = FastOutSlowInInterpolator()
+            fadeMode = com.google.android.material.transition.platform.MaterialContainerTransform.FADE_MODE_IN
+        }
     }
 }
